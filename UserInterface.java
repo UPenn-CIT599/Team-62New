@@ -20,7 +20,7 @@ import javax.swing.event.ListSelectionListener;
 
 
 /**
- * This class represents the user interface container (JPanel) that is placed inside the application window. 
+ * This class represents the user interface container (JPanel) that is placed inside the application window, and runs the application window.
  * @author gracepark
  *
  */
@@ -56,7 +56,7 @@ public class UserInterface extends JPanel {
         
         tickerListScroller = new JScrollPane(tickerList);
         tickerListScroller.setPreferredSize(new Dimension(250, 80));
-        tickerList.addListSelectionListener(new tickerListHandler());
+        tickerList.addListSelectionListener(new TickerListHandler());
         tickerSelectedFlag = false;
         
         
@@ -71,7 +71,7 @@ public class UserInterface extends JPanel {
         
         timeListScroller = new JScrollPane(timeSeriesList);
         timeSeriesList.setPreferredSize(new Dimension(250, 80));
-        timeSeriesList.addListSelectionListener(new timeListHandler());
+        timeSeriesList.addListSelectionListener(new TimeListHandler());
         timeSelectedFlag = false;
         
 
@@ -95,19 +95,19 @@ public class UserInterface extends JPanel {
      * @author gracepark
      *
      */
-    class tickerListHandler implements ListSelectionListener {
+    class TickerListHandler implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
             tickerSelectedFlag = true;
             setButtonState();
         } 
-    }
+ 
     
     /**
      * This inner class sets the "timeSelectedFlag" to indicate that the user has selected a time series, and then calls setButtonState() method. 
      * @author gracepark
      *
      */
-    class timeListHandler implements ListSelectionListener {
+    class TimeListHandler implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
             timeSelectedFlag = true;
             setButtonState();
@@ -136,7 +136,7 @@ public class UserInterface extends JPanel {
             
             //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a HashMap 
             StockDataReader stock = new StockDataReader(ticker, timeSeriesInt);
-            HashMap<Integer, StockData> stockData = stock.fetchData(); 
+            HashMap<Integer, StockData> stockData = stockData.fetchData(); 
             
             //Creates an instance of DataConverter and uses its methods to convert HashMap data to stock time and stock value arrays
             DataConverter dataConvert = new DataConverter(stockData);
