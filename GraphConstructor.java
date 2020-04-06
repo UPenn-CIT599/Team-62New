@@ -313,6 +313,13 @@ public class GraphConstructor extends JPanel {
     public int getWindowHeight() {
 	return windowHeight;
     }
+    public String[] getStockTimes() {
+	return StockTimes;
+    }
+    
+    public double[] getStockValues() {
+	return StockValues;
+    }
 
     public void setStockValues(double[] stockValue) {
 	this.StockValues = stockValue;
