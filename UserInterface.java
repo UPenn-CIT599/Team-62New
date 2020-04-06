@@ -134,15 +134,19 @@ public class UserInterface extends JPanel {
             String timeSeries = (String) timeSeriesList.getSelectedValue();
             int timeSeriesInt = convertTimeSeriesToInt(timeSeries);
             
-            //Creates instances of StockDataReader and GraphConstructor classes 
-            //and utilizes both their methods to add a graph to graphPanel
+            //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a HashMap 
             StockDataReader stock = new StockDataReader(ticker, timeSeriesInt);
             HashMap<Integer, StockData> stockData = stock.fetchData(); 
-            //fetchData() returns a HashMap stored in variable "stockData"
             
+            //Creates an instance of DataConverter and uses its methods to convert HashMap data to stock time and stock value arrays
+            DataConverter dataConvert = new DataConverter(stockData);
+            String[] stockTimes = dataConvert.getStockTimes();
+            double[] stockValues = dataConvert.getStockValues();
+            
+            //Creates an instance of GraphConstructor and adds the returned graph to graphPanel 
             GraphConstructor gc = new GraphConstructor();
-            gc.setStockTimes(); //this method requires a String[] stockTimes
-            gc.setStockValues(); //this method requires a double[] stockValues
+            gc.setStockTimes(stockTimes); 
+            gc.setStockValues(stockValues);
             graphPanel.add(gc);
            
         }
