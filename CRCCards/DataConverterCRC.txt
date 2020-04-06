@@ -1,0 +1,8 @@
+Class: DataConverter
+
+Responsibilities:
+- Stores times in a String[] array from a given HashMap of stock data
+- Stores closing prices in a double[] array from a given HashMap of stock data
+
+Collaborators:
+- StockDataReader

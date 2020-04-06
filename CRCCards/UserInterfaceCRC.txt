@@ -1,0 +1,12 @@
+Class: UserInterface
+
+Responsiblities:
+- creates and shows user application window
+- user application window has scrolling lists for user to select stock ticker and time series
+- user application window has a OK button to send user choices to retrieve relevant data and corresponding graph 
+
+
+Collaborators: 
+- StockDataReader
+- DataConverter
+- GraphConstructor 
