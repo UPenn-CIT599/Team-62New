@@ -7,5 +7,3 @@ Project Idea: User Interface for Graphing a Live and Historical Stock Indices Ou
 If the user wishes to see present data, they will select “present” as their ending date. The graphing application will then graph the live price level by the current point in the day. If the market is not open, the program will display the price level for the last day the market was open.
 
 Work Breakdown: Data (historical and live prices for stock indexes and individual securities) Display Display Price Graph Display Trading Volume Graph for Index Display Candlestick Chart? (This seems hard…) User Interface Allow User to Select Index/Stock/Cryptocurrency Allow User to Select Date Range
-
-!(ProgramOutline.gif)
