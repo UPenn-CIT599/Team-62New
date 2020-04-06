@@ -1,0 +1,16 @@
+Class Name: GraphDrawer
+_________________________________________________________________________________________
+Responsibilities				                      |Collaborators
+GraphDrawer					                          |StockData.java
+- This is the constructor that takes in the 	|DataConverter.java
+price and time array from drawGraph		        |					
+- This is the part of the graph			          |
+that sets the window size.				
+
+drawGraph()
+- This is the method that draws the graph
+given the window height.
+
+Main()
+- this main method will be removed once 
+our program has been put together.
