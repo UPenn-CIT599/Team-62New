@@ -1,0 +1,12 @@
+Class: StockDataReader
+
+Responsibilities:
+- Connects to the alphavantage.co API url and queries for the given time and symbol
+- Stores the data  in a HashMap using the custom StockData class
+-Returns a HashMap of an integer and StockData
+
+Collaborators: 
+- StockData
+-DataConverter
+
+

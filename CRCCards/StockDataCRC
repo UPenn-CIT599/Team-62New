@@ -1,0 +1,8 @@
+Class: StockData
+
+Responsibilities:
+-Stores a time stamp and price
+
+Collaborators: 
+- StockDataReader
+
