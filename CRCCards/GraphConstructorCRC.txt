@@ -1,0 +1,44 @@
+Class Name: GraphConstructor
+_________________________________________________________________________________________
+Responsibilities				|Collaborators
+paintComponent					|GraphDrawer.java
+- This is the part of the class that		|
+runs all the its methods. 			|		
+drawBasic Graph					|
+- This method draws the X and Y Axis.		|
+drawScale					|
+- This method draws the tick marks		|
+on the X and Y Axis. 				|
+drawPoints					|
+- This method finds the Y-Values for 		|
+each point.					|
+drawLines					|
+- This method draws trendlines			|
+connecting each point.				|
+drawPositiveNegativeLine			|
+- This method draws a flat line 		|
+representing where the price started.		|
+negMarket					|
+- This method returns true if the 		|
+overall price change from start			|
+to finish is negative.				|
+getMax						|
+- This helper method returns the		|
+largest value in an array.			|
+setXAxis					|
+- This method divides the window width		|
+by the number of points and returns		|
+an array that contains each of these		|
+equal points.					|
+setYAxis					|
+- This method segments the window height by	|
+the number of points and returns an array that	|
+contains each of these equal points.		|
+setYAxisPriceLevels				|
+- This method returns strings of each tick mark	|
+on the Y-Axis in intervals of 10.		|
+valueConverter					|
+- This method converts each price level into a	|
+Y-Axis value to plot on the window.		|
+upNext10					|
+- This method returns the next highest 10s 	|
