@@ -8,4 +8,4 @@ If the user wishes to see present data, they will select “present” as their 
 
 Work Breakdown: Data (historical and live prices for stock indexes and individual securities) Display Display Price Graph Display Trading Volume Graph for Index Display Candlestick Chart? (This seems hard…) User Interface Allow User to Select Index/Stock/Cryptocurrency Allow User to Select Date Range
 
-![] (Program Outline.gif)
+![] (CRCCards/Program Outline.gif)
