@@ -15,23 +15,21 @@ public class GraphConstructor extends JPanel {
     int width = windowWidth - buffer;
     int windowHeight = 500;
     int height = windowHeight - buffer;
-    int graphInterval = 10;
-
+    int graphInterval = 1;
     double[] StockValues = new double[] {};
     String[] StockTimes = new String[] {};
     String[] PriceLevels = new String[] {};
-
     int[] xAxisIntervals = new int[] {};
     int[] yAxisIntervals = new int[] {};
     int[] yAxisPrices = new int[] {};
     String[] yAxisPriceLevels = new String[] {};
-
     int heightMidline = (int) ((height / 7) * 6);
 
     public void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	g.setFont(new Font("Courier", Font.PLAIN, 13));
 
+	this.graphInterval = setGraphInterval();
 	this.xAxisIntervals = setXAxis(StockTimes);
 	this.yAxisIntervals = setYAxis(StockValues);
 	this.yAxisPrices = new int[xAxisIntervals.length];
@@ -46,11 +44,25 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * drawBasicGraph: This method draws the X and Y Axis. It also draws a label for the X-Axis. 
+     * drawBasicGraph: This method draws the X and Y Axis. It also draws a label for
+     * the X-Axis.
+     * 
      * @param g
      */
 
     public void drawBasicGraph(Graphics g) {
+	// Draw Background Rectangle
+	g.setColor(Color.LIGHT_GRAY);
+	g.fillRect(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
+		xAxisIntervals[xAxisIntervals.length - 2], heightMidline - yAxisIntervals[yAxisIntervals.length - 1]);
+
+	g.setColor(Color.BLACK);
+	// Draw Outer Graph Lines
+	g.drawLine(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
+		xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1]);
+	g.drawLine(xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1],
+		xAxisIntervals[xAxisIntervals.length - 1], heightMidline);
+
 	// Draw X Label
 	g.drawString("Time", width / 2, heightMidline + 40);
 
@@ -78,8 +90,14 @@ public class GraphConstructor extends JPanel {
 
 	// Draw Y Labels and TickMarks
 	for (int i = 0; i < yAxisIntervals.length; i++) {
-	    if (yAxisIntervals.length > 1000 & i % 100 == 0) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 50, yAxisIntervals[i] + 5);
+	    if (yAxisIntervals.length > 100000 & i % 10000 == 0) {
+		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 64, yAxisIntervals[i] + 5);
+		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
+	    } else if ((yAxisIntervals.length > 10000 & yAxisIntervals.length < 100000) & i % 1000 == 0) {
+		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
+		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
+	    } else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length < 10000) & i % 100 == 0) {
+		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
 		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
 	    } else if ((yAxisIntervals.length > 100 & yAxisIntervals.length < 1000) & i % 10 == 0) {
 		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
@@ -169,6 +187,18 @@ public class GraphConstructor extends JPanel {
 	    return false;
     }
 
+    public double getMin(double[] stockPrice) {
+	double min = stockPrice[0];
+
+	for (int i = 0; i < stockPrice.length; i++) {
+	    if (stockPrice[i] < min) {
+		min = stockPrice[i];
+	    }
+	}
+
+	return min;
+    }
+
     /**
      * getMax: This method takes in a double[] and returns the largest double in
      * that array.
@@ -219,13 +249,12 @@ public class GraphConstructor extends JPanel {
      */
 
     public int[] setYAxis(double[] stockValues) {
-	double range = getMax(stockValues);
-	int extendedRange = upNext10(range);
-	int numberOfSegments = extendedRange / graphInterval;
+	double range = getScale(StockValues);
+	int numberOfSegments = (int) (range / graphInterval);
 
 	int[] numberedYAxis = new int[numberOfSegments + 1];
 
-	double tempLength = 0;
+	double tempLength = downNext10(getMin(StockValues));
 
 	for (int i = 0; i < numberedYAxis.length; i++) {
 	    numberedYAxis[i] = valueConverter(tempLength);
@@ -245,11 +274,14 @@ public class GraphConstructor extends JPanel {
 
     public String[] setYAxisPriceLevels(double[] stockPrice) {
 	double range = getMax(stockPrice);
+
 	int extendedRange = upNext10(range);
+
 	int priceInterval = extendedRange / graphInterval;
+
 	String[] YAxisPriceLevels = new String[priceInterval + 1];
 
-	int tempPrice = 0;
+	int tempPrice = downNext10(getMin(StockValues));
 
 	for (int i = 0; i < YAxisPriceLevels.length; i++) {
 	    int tempPriceInt = tempPrice;
@@ -272,16 +304,25 @@ public class GraphConstructor extends JPanel {
      */
 
     public int valueConverter(double originalPrice) {
-	double range = getMax(StockValues);
-	double extendedRange = upNext10(range);
-
+	double range = getScale(StockValues);
 	double yAxisLength = heightMidline - buffer;
-
-	double result = (originalPrice * yAxisLength) / extendedRange;
+	double result = ((originalPrice - downNext10(getMin(StockValues))) * yAxisLength) / range;
 
 	int resultInt = (int) (heightMidline - result);
 
 	return resultInt;
+    }
+
+    public double getScale(double[] stockPrices) {
+	double max = getMax(StockValues);
+	double extendedMax = upNext10(max);
+
+	double min = getMin(StockValues);
+	double extendedMin = downNext10(min);
+
+	double range = extendedMax - extendedMin;
+
+	return range;
     }
 
     /**
@@ -306,6 +347,31 @@ public class GraphConstructor extends JPanel {
 	return rangeLabel;
     }
 
+    public int downNext10(double range) {
+	int rangeLabel = 0;
+
+	int downwardInt = (int) Math.floor(range);
+	while (downwardInt % graphInterval != 0) {
+	    downwardInt = downwardInt - 1;
+	}
+
+	rangeLabel = downwardInt;
+	return rangeLabel;
+    }
+
+    private int setGraphInterval() {
+	double scale = getScale(StockValues);
+	int tempGraphInterval = 10;
+	System.out.println(scale);
+
+	if (scale < 5) {
+	    tempGraphInterval = 1;
+	    return tempGraphInterval;
+	}
+
+	return tempGraphInterval;
+    }
+
     public int getWindowWidth() {
 	return windowWidth;
     }
@@ -313,10 +379,11 @@ public class GraphConstructor extends JPanel {
     public int getWindowHeight() {
 	return windowHeight;
     }
+
     public String[] getStockTimes() {
 	return StockTimes;
     }
-    
+
     public double[] getStockValues() {
 	return StockValues;
     }
