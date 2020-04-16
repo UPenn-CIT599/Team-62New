@@ -20,9 +20,11 @@ public class DataConverter {
     	int i = stockData.size();
     	String[] times = new String[i];
     	
-    	for(int j = i - 1; j >= 0; j--) {
+    	int j = 0;
+    	for(int k = i - 1; k >= 0; k--) {
     		StockData stockTime = stockData.get(j);
-    		times[j] = stockTime.getTime();
+    		times[k] = stockTime.getTime();
+    		j++;
     	}
     	return times;
     }
@@ -36,9 +38,11 @@ public class DataConverter {
     	int i = stockData.size();
     	double[] values = new double[i];
     	
-    	for(int j = i -1 ; j >= 0; j--) {
+    	int j = 0;
+    	for(int k = i -1 ; k >= 0; k--) {
     		StockData stockValue = stockData.get(j);
-    		values[j] = stockValue.getClose();
+    		values[k] = stockValue.getClose();
+    		j++;
     	}
     	return values;        
     }
