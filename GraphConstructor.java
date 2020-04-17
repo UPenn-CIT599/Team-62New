@@ -66,7 +66,7 @@ public class GraphConstructor extends JPanel {
 	// Draw Outer Graph Lines
 	g.drawLine(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
 		xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1]);
-	
+
 	g.drawLine(xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1],
 		xAxisIntervals[xAxisIntervals.length - 1], heightMidline);
 
@@ -100,25 +100,44 @@ public class GraphConstructor extends JPanel {
 	    }
 	}
 
+	System.out.println(yAxisIntervals.length);
+
 	// Draw Y Labels and TickMarks
 	for (int i = 0; i < yAxisIntervals.length; i++) {
-	    if (yAxisIntervals.length > 100000 & i % 10000 == 0) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 64, yAxisIntervals[i] + 5);
-		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
-	    } else if ((yAxisIntervals.length > 10000 & yAxisIntervals.length < 100000) & i % 1000 == 0) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
-		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
-	    } else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length < 10000) & i % 100 == 0) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
-		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
-	    } else if ((yAxisIntervals.length > 100 & yAxisIntervals.length < 1000) & i % 10 == 0) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 45, yAxisIntervals[i] + 5);
-		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
-	    } else if (yAxisIntervals.length < 100) {
-		g.drawString(yAxisPriceLevels[i], xAxisIntervals[0] - 35, yAxisIntervals[i] + 5);
-		g.drawLine(xAxisIntervals[0], yAxisIntervals[i], xAxisIntervals[0] + 10, yAxisIntervals[i]);
+
+	    // Printing Y Axis in Segments of 10,000 if there are more than 100,000 Segments
+	    if (yAxisIntervals.length > 100000 & i % 20000 == 0) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
+	    }
+
+	    // Printing Y Axis in Segments of 1,000 if there are more than 10,000 Segments
+	    else if ((yAxisIntervals.length > 10000 & yAxisIntervals.length < 100000) & i % 2000 == 0) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
+	    }
+
+	    // Printing Y Axis in Segments of 100 if there are more than 1000 Segments
+	    else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length < 10000) & i % 200 == 0) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
+	    } 
+	    
+	    // Printing Y Axis in Segments of 20 if there are more than 1000 Segments
+	    else if ((yAxisIntervals.length > 100 & yAxisIntervals.length < 1000) & i % 30 == 0) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
+	    } 
+	    
+	    else if ((yAxisIntervals.length > 10 & yAxisIntervals.length < 100) & i % 10 == 0) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
+	    } 
+	    
+	    else if ((yAxisIntervals.length < 10)) {
+		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 	}
+    }
+
+    public void drawLineLabel(String PriceLevel, int yValue, Graphics g) {
+	g.drawString(PriceLevel, xAxisIntervals[0] - 50, yValue);
+	g.drawLine(xAxisIntervals[0], yValue - 5, xAxisIntervals[0] + 10, yValue - 5);
     }
 
     /**
@@ -143,12 +162,10 @@ public class GraphConstructor extends JPanel {
 
 	    if (xAxisIntervals.length > 300 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
-	    } else {
+	    } else if (xAxisIntervals.length < 300){
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
 
-	    // g.drawString(Double.toString(StockValues[i]), xAxisIntervals[i], tempYValue +
-	    // buffer);
 	}
     }
 
@@ -326,6 +343,7 @@ public class GraphConstructor extends JPanel {
 
     public int valueConverter(double originalPrice) {
 	double range = getScale(StockValues);
+
 	double yAxisLength = heightMidline - buffer;
 	double result = ((originalPrice - downNext10(getMin(StockValues))) * yAxisLength) / range;
 
@@ -397,7 +415,7 @@ public class GraphConstructor extends JPanel {
 	label.setOpaque(true);
 	Dimension size = label.getPreferredSize();
 	label.setBackground(Color.lightGray);
-	
+
 	if (yValue > heightMidline - 20) {
 	    label.setBounds(xValue, yValue - 50, size.width, size.height);
 	} else if (xValue >= xAxisIntervals[xAxisIntervals.length - 1]) {
@@ -406,7 +424,7 @@ public class GraphConstructor extends JPanel {
 	    label.setBounds(xValue, yValue, size.width, size.height);
 	}
 
-	setLayout(null);
+	// setLayout(null);
 	add(label);
     }
 
@@ -432,13 +450,6 @@ public class GraphConstructor extends JPanel {
 
     public void setStockTimes(String[] stockTimes) {
 	this.StockTimes = stockTimes;
-    }
-	
-    public static void main(String[] stockTimes, double[] stockValues, JPanel panel) {
-        GraphConstructor gc = new GraphConstructor();
-        gc.setStockValues(stockValues);
-        gc.setStockTimes(stockTimes);
-        panel.add(gc);
     }
 
 }
