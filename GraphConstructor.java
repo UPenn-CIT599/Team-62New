@@ -1,12 +1,18 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GraphConstructor extends JPanel {
@@ -60,6 +66,7 @@ public class GraphConstructor extends JPanel {
 	// Draw Outer Graph Lines
 	g.drawLine(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
 		xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1]);
+	
 	g.drawLine(xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1],
 		xAxisIntervals[xAxisIntervals.length - 1], heightMidline);
 
@@ -84,8 +91,13 @@ public class GraphConstructor extends JPanel {
     public void drawScale(Graphics g) {
 	// Draw X Labels and TickMarks
 	for (int i = 0; i < xAxisIntervals.length; i++) {
-	    g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
-	    g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    if (xAxisIntervals.length > 364 & i % 26 == 0) {
+		g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
+		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    } else {
+		g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
+		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    }
 	}
 
 	// Draw Y Labels and TickMarks
@@ -117,17 +129,26 @@ public class GraphConstructor extends JPanel {
      */
 
     public void drawPoints(Graphics g) {
-	// Draw Points
+	// Set Color of Points
 	if (negMarket() == true) {
 	    g.setColor(Color.RED.darker().darker());
 	} else {
 	    g.setColor(Color.GREEN.darker().darker());
 	}
+
+	// Draw Points
 	for (int i = 0; i < xAxisIntervals.length; i++) {
-	    int tempYValue = valueConverter(StockValues[i]);
-	    yAxisPrices[i] = tempYValue;
-	    g.fillOval(xAxisIntervals[i] - 3, tempYValue - 2, 7, 7);
-	    g.drawString(Double.toString(StockValues[i]), xAxisIntervals[i], tempYValue + buffer);
+	    yAxisPrices[i] = valueConverter(StockValues[i]);
+	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
+
+	    if (xAxisIntervals.length > 300 & i % 20 == 0) {
+		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
+	    } else {
+		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
+	    }
+
+	    // g.drawString(Double.toString(StockValues[i]), xAxisIntervals[i], tempYValue +
+	    // buffer);
 	}
     }
 
@@ -362,7 +383,6 @@ public class GraphConstructor extends JPanel {
     private int setGraphInterval() {
 	double scale = getScale(StockValues);
 	int tempGraphInterval = 10;
-	System.out.println(scale);
 
 	if (scale < 5) {
 	    tempGraphInterval = 1;
@@ -370,6 +390,24 @@ public class GraphConstructor extends JPanel {
 	}
 
 	return tempGraphInterval;
+    }
+
+    public void LabelMaker(String priceLevel, int xValue, int yValue) {
+	JLabel label = new JLabel(priceLevel);
+	label.setOpaque(true);
+	Dimension size = label.getPreferredSize();
+	label.setBackground(Color.lightGray);
+	
+	if (yValue > heightMidline - 20) {
+	    label.setBounds(xValue, yValue - 50, size.width, size.height);
+	} else if (xValue >= xAxisIntervals[xAxisIntervals.length - 1]) {
+	    label.setBounds(xValue - 40, yValue, size.width, size.height);
+	} else {
+	    label.setBounds(xValue, yValue, size.width, size.height);
+	}
+
+	setLayout(null);
+	add(label);
     }
 
     public int getWindowWidth() {
