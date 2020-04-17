@@ -1,9 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -17,6 +20,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 
 
 /**
@@ -35,28 +39,34 @@ public class UserInterface extends JPanel {
     JScrollPane timeListScroller;
     boolean timeSelectedFlag;
     JButton okButton;
+    TickerList tickerlist;
 
 
     public UserInterface() {
         //Create JPanel container for chart to be placed in
         graphPanel = new JPanel();
         graphPanel.setPreferredSize(new Dimension(800, 500));
+        graphPanel.setLayout(new GridLayout(1,1));
         Border blackLine = BorderFactory.createLineBorder(Color.black);
         graphPanel.setBorder(blackLine);
         
         
         //Create ticker list and put it in a scroll pane 
         tickerListModel = new DefaultListModel<String>();
-        String tickers[] = {"VOO", "MSFT", "AAPL", "AMZN", "FB", "GOOGL"};
+        tickerlist = new TickerList();
+        String tickers[] = tickerlist.getTickerArray();
+        //String tickers[] = {"VOO", "MSFT", "AAPL", "AMZN", "FB", "GOOGL", "DOW"};
         for (int i = 0; i < tickers.length; i++) 
             tickerListModel.addElement(tickers[i]);
         tickerList = new JList<String>(tickerListModel);
         tickerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tickerList.setVisibleRowCount(-1);
+        //ßtickerList.getToolTipLocation(event)
         
         tickerListScroller = new JScrollPane(tickerList);
         tickerListScroller.setPreferredSize(new Dimension(250, 80));
         tickerList.addListSelectionListener(new TickerListHandler());
+        tickerList.addMouseMotionListener(new TickerMouseListener());
         tickerSelectedFlag = false;
         
         
@@ -100,6 +110,28 @@ public class UserInterface extends JPanel {
             tickerSelectedFlag = true;
             setButtonState();
         } 
+    }
+    
+    class TickerMouseListener implements MouseMotionListener {
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            @SuppressWarnings("unchecked")
+            JList<String> list = (JList<String>) e.getSource();
+            DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+            int index = list.locationToIndex(e.getPoint());
+            if (index >= 0) {
+                String temp = model.getElementAt(index);
+                String companyName = tickerlist.getCompanyName(temp);
+                list.setToolTipText(companyName);
+            } 
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            // TODO Auto-generated method stub
+            
+        } 
+    }
  
     
     /**
@@ -129,26 +161,29 @@ public class UserInterface extends JPanel {
      *
      */
     class OkButtonHandler implements ActionListener {
+
         public void actionPerformed (ActionEvent e) {
             String ticker = (String) tickerList.getSelectedValue();
             String timeSeries = (String) timeSeriesList.getSelectedValue();
             int timeSeriesInt = convertTimeSeriesToInt(timeSeries);
             
-            //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a HashMap 
+            //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a TreeMap 
             StockDataReader stock = new StockDataReader(ticker, timeSeriesInt);
-            HashMap<Integer, StockData> stockData = stockData.fetchData(); 
+            HashMap<Integer, StockData> stockData = null;
+            try {
+                stockData = stock.fetchData();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } 
             
-            //Creates an instance of DataConverter and uses its methods to convert HashMap data to stock time and stock value arrays
+            //Creates an instance of DataConverter and uses its methods to convert TreeMap data to stock time and stock value arrays
             DataConverter dataConvert = new DataConverter(stockData);
             String[] stockTimes = dataConvert.getStockTimes();
             double[] stockValues = dataConvert.getStockValues();
-            
-            //Creates an instance of GraphConstructor and adds the returned graph to graphPanel 
-            GraphConstructor gc = new GraphConstructor();
-            gc.setStockTimes(stockTimes); 
-            gc.setStockValues(stockValues);
-            graphPanel.add(gc);
-           
+                
+            if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
+            GraphConstructor.main(stockTimes, stockValues, graphPanel);
+            graphPanel.validate();
         }
         
         /**
@@ -157,6 +192,16 @@ public class UserInterface extends JPanel {
          * @return
          */
         int convertTimeSeriesToInt(String timeSeries) {
+            switch(timeSeries) {
+                case "Day": 
+                    return 1;
+                case "Week":
+                    return 5;
+                case "Month":
+                    return 30;
+                case "Year":
+                    return 365;     
+            }
             return 0;
         }
     }
@@ -195,5 +240,7 @@ public class UserInterface extends JPanel {
             }
         });
     }
+  
 
 }
+
