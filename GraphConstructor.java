@@ -451,5 +451,12 @@ public class GraphConstructor extends JPanel {
     public void setStockTimes(String[] stockTimes) {
 	this.StockTimes = stockTimes;
     }
+    
+    public static void main(String[] stockTimes, double[] stockValues, JPanel panel) {
+        GraphConstructor gc = new GraphConstructor();
+        gc.setStockValues(stockValues);
+        gc.setStockTimes(stockTimes);
+        panel.add(gc);
+    }
 
 }
