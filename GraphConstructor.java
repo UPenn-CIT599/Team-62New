@@ -70,9 +70,6 @@ public class GraphConstructor extends JPanel {
 	g.drawLine(xAxisIntervals[xAxisIntervals.length - 1], yAxisIntervals[yAxisIntervals.length - 1],
 		xAxisIntervals[xAxisIntervals.length - 1], heightMidline);
 
-	// Draw X Label
-	g.drawString("Time", width / 2, heightMidline + 40);
-
 	// Draw Y Axis
 	g.drawLine(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1], xAxisIntervals[0], heightMidline);
 
@@ -90,17 +87,55 @@ public class GraphConstructor extends JPanel {
 
     public void drawScale(Graphics g) {
 	// Draw X Labels and TickMarks
+	String timeFrame = StockTimes[0].split(" ")[0] + " to " + StockTimes[StockTimes.length-1].split(" ")[0];
+	
+
+	// Draw X Axis Labels (Day)
+	if (StockTimes.length == 13) {
+	    g.drawString(StockTimes[0].split(" ")[0], windowWidth / 2, heightMidline + 40);
+	}
+	
+	// Draw X Axis Labels (Week)
+	if (StockTimes.length == 5) {
+	    g.drawString(timeFrame, width / 2, heightMidline + 40);
+	}
+	// Draw X Axis Labels (Month)
+	if (StockTimes.length == 30) {
+	    g.drawString(timeFrame, width / 2, heightMidline + 40);
+	}
+	// Draw X Axis Labels (Years)
+	if (StockTimes.length == 365) {
+	    g.drawString(timeFrame, width / 2, heightMidline + 40);
+	}
+
 	for (int i = 0; i < xAxisIntervals.length; i++) {
-	    if (xAxisIntervals.length > 364 & i % 26 == 0) {
-		g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
-		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
-	    } else {
+	    String stockDate = StockTimes[i].split(" ")[0];
+	    String[] stockDateRemoveYear = stockDate.split("-");
+	    String stockMonth = stockDateRemoveYear[1]+"-"+stockDateRemoveYear[2];
+
+	    if ((xAxisIntervals.length == 365) & (i % 50 == 0)) {
 		g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
 		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
 	    }
-	}
+	    if ((xAxisIntervals.length == 30) & (i % 5 == 0)) {
+		g.drawString(stockMonth, xAxisIntervals[i] - 15, heightMidline + 20);
+		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    }
 
-	System.out.println(yAxisIntervals.length);
+	    if (xAxisIntervals.length == 5) {
+		g.drawString(stockMonth, xAxisIntervals[i] - 25, heightMidline + 20);
+		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    }
+
+	    if ((xAxisIntervals.length == 13) & (i % 2 == 0)) {
+		String[] stockTimesNoYear = StockTimes[i].split(" ");
+		String[] stockTimes = stockTimesNoYear[1].split(":");
+		String stockTimeNoDate = stockTimes[0]+ ":" + stockTimes[1];
+		g.drawString(stockTimeNoDate, xAxisIntervals[i]-20, heightMidline + 20);
+		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
+	    }
+
+	}
 
 	// Draw Y Labels and TickMarks
 	for (int i = 0; i < yAxisIntervals.length; i++) {
@@ -118,17 +153,17 @@ public class GraphConstructor extends JPanel {
 	    // Printing Y Axis in Segments of 100 if there are more than 1000 Segments
 	    else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length < 10000) & i % 200 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
-	    } 
-	    
+	    }
+
 	    // Printing Y Axis in Segments of 20 if there are more than 1000 Segments
 	    else if ((yAxisIntervals.length > 100 & yAxisIntervals.length < 1000) & i % 30 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
-	    } 
-	    
+	    }
+
 	    else if ((yAxisIntervals.length > 10 & yAxisIntervals.length < 100) & i % 10 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
-	    } 
-	    
+	    }
+
 	    else if ((yAxisIntervals.length < 10)) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
@@ -162,7 +197,7 @@ public class GraphConstructor extends JPanel {
 
 	    if (xAxisIntervals.length > 300 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
-	    } else if (xAxisIntervals.length < 300){
+	    } else if (xAxisIntervals.length < 300) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
 
@@ -424,7 +459,7 @@ public class GraphConstructor extends JPanel {
 	    label.setBounds(xValue, yValue, size.width, size.height);
 	}
 
-	// setLayout(null);
+	setLayout(null);
 	add(label);
     }
 
@@ -451,12 +486,12 @@ public class GraphConstructor extends JPanel {
     public void setStockTimes(String[] stockTimes) {
 	this.StockTimes = stockTimes;
     }
-    
+
     public static void main(String[] stockTimes, double[] stockValues, JPanel panel) {
-        GraphConstructor gc = new GraphConstructor();
-        gc.setStockValues(stockValues);
-        gc.setStockTimes(stockTimes);
-        panel.add(gc);
+	GraphConstructor gc = new GraphConstructor();
+	gc.setStockValues(stockValues);
+	gc.setStockTimes(stockTimes);
+	panel.add(gc);
     }
 
 }
