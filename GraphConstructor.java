@@ -5,9 +5,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GraphConstructor extends JPanel {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     int buffer = 20;
     int windowWidth = 800;
     int width = windowWidth - buffer;
@@ -29,7 +35,9 @@ public class GraphConstructor extends JPanel {
     int[] yAxisIntervals = new int[] {};
     int[] yAxisPrices = new int[] {};
     String[] yAxisPriceLevels = new String[] {};
+    
     int heightMidline = (int) ((height / 7) * 6);
+    int xAxisStart = (int) (width / 9);
 
     public void paintComponent(Graphics g) {
 	super.paintComponent(g);
@@ -58,9 +66,9 @@ public class GraphConstructor extends JPanel {
 
     public void drawBasicGraph(Graphics g) {
 	// Draw Background Rectangle
-	g.setColor(Color.LIGHT_GRAY);
-	g.fillRect(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
-		xAxisIntervals[xAxisIntervals.length - 2], heightMidline - yAxisIntervals[yAxisIntervals.length - 1]);
+	//g.setColor(Color.LIGHT_GRAY);
+	//g.fillRect(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
+	//	xAxisIntervals[xAxisIntervals.length - 2], heightMidline - yAxisIntervals[yAxisIntervals.length - 1]);
 
 	g.setColor(Color.BLACK);
 	// Draw Outer Graph Lines
@@ -87,14 +95,12 @@ public class GraphConstructor extends JPanel {
 
     public void drawScale(Graphics g) {
 	// Draw X Labels and TickMarks
-	String timeFrame = StockTimes[0].split(" ")[0] + " to " + StockTimes[StockTimes.length-1].split(" ")[0];
-	
+	String timeFrame = StockTimes[0].split(" ")[0] + " to " + StockTimes[StockTimes.length - 1].split(" ")[0];
 
 	// Draw X Axis Labels (Day)
 	if (StockTimes.length == 13) {
 	    g.drawString(StockTimes[0].split(" ")[0], windowWidth / 2, heightMidline + 40);
 	}
-	
 	// Draw X Axis Labels (Week)
 	if (StockTimes.length == 5) {
 	    g.drawString(timeFrame, width / 2, heightMidline + 40);
@@ -111,7 +117,7 @@ public class GraphConstructor extends JPanel {
 	for (int i = 0; i < xAxisIntervals.length; i++) {
 	    String stockDate = StockTimes[i].split(" ")[0];
 	    String[] stockDateRemoveYear = stockDate.split("-");
-	    String stockMonth = stockDateRemoveYear[1]+"-"+stockDateRemoveYear[2];
+	    String stockMonth = stockDateRemoveYear[1] + "-" + stockDateRemoveYear[2];
 
 	    if ((xAxisIntervals.length == 365) & (i % 50 == 0)) {
 		g.drawString(StockTimes[i], xAxisIntervals[i] - 15, heightMidline + 20);
@@ -130,8 +136,8 @@ public class GraphConstructor extends JPanel {
 	    if ((xAxisIntervals.length == 13) & (i % 2 == 0)) {
 		String[] stockTimesNoYear = StockTimes[i].split(" ");
 		String[] stockTimes = stockTimesNoYear[1].split(":");
-		String stockTimeNoDate = stockTimes[0]+ ":" + stockTimes[1];
-		g.drawString(stockTimeNoDate, xAxisIntervals[i]-20, heightMidline + 20);
+		String stockTimeNoDate = stockTimes[0] + ":" + stockTimes[1];
+		g.drawString(stockTimeNoDate, xAxisIntervals[i] - 20, heightMidline + 20);
 		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
 	    }
 
@@ -183,6 +189,8 @@ public class GraphConstructor extends JPanel {
      */
 
     public void drawPoints(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+
 	// Set Color of Points
 	if (negMarket() == true) {
 	    g.setColor(Color.RED.darker().darker());
@@ -192,7 +200,8 @@ public class GraphConstructor extends JPanel {
 
 	// Draw Points
 	for (int i = 0; i < xAxisIntervals.length; i++) {
-	    yAxisPrices[i] = valueConverter(StockValues[i]);
+	    yAxisPrices[i] = valueConverterY(StockValues[i]);
+
 	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
 
 	    if (xAxisIntervals.length > 300 & i % 20 == 0) {
@@ -302,12 +311,12 @@ public class GraphConstructor extends JPanel {
 
     public int[] setXAxis(String[] times) {
 	int[] numberedXAxis = new int[StockTimes.length];
-	int equalInterval = width / StockTimes.length;
-	int tempScaleLength = equalInterval;
+	//int numberOfSegments = StockTimes.length;
+	
 
 	for (int i = 0; i < numberedXAxis.length; i++) {
-	    numberedXAxis[i] = tempScaleLength;
-	    tempScaleLength = tempScaleLength + equalInterval;
+	    numberedXAxis[i] = valueConverterX(i);
+	    //tempScaleLength = tempScaleLength + equalInterval;
 	}
 
 	return numberedXAxis;
@@ -330,7 +339,7 @@ public class GraphConstructor extends JPanel {
 	double tempLength = downNext10(getMin(StockValues));
 
 	for (int i = 0; i < numberedYAxis.length; i++) {
-	    numberedYAxis[i] = valueConverter(tempLength);
+	    numberedYAxis[i] = valueConverterY(tempLength);
 	    tempLength = tempLength + graphInterval;
 	}
 
@@ -376,7 +385,7 @@ public class GraphConstructor extends JPanel {
      * @return int resultInt.
      */
 
-    public int valueConverter(double originalPrice) {
+    public int valueConverterY(double originalPrice) {
 	double range = getScale(StockValues);
 
 	double yAxisLength = heightMidline - buffer;
@@ -397,6 +406,18 @@ public class GraphConstructor extends JPanel {
 	double range = extendedMax - extendedMin;
 
 	return range;
+    }
+    
+    
+    public int valueConverterX(int arrayIndex) {
+	int range = StockTimes.length;
+	double xAxisLength = width - (buffer*4);
+	
+	double result = (arrayIndex * xAxisLength) / range;
+	
+	int resultInt = (int) (xAxisStart + result);
+	
+	return resultInt;
     }
 
     /**
@@ -449,7 +470,7 @@ public class GraphConstructor extends JPanel {
 	JLabel label = new JLabel(priceLevel);
 	label.setOpaque(true);
 	Dimension size = label.getPreferredSize();
-	label.setBackground(Color.lightGray);
+	//label.setBackground(Color.lightGray);
 
 	if (yValue > heightMidline - 20) {
 	    label.setBounds(xValue, yValue - 50, size.width, size.height);
