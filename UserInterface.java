@@ -4,8 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -14,6 +14,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
@@ -24,25 +25,26 @@ import javax.swing.event.ListSelectionListener;
 
 
 /**
- * This class represents the user interface container (JPanel) that is placed inside the application window, and runs the application window.
+ * This class creates the user interface container (JPanel) that is placed inside the application window, and runs the application window.
  * @author gracepark
  *
  */
+@SuppressWarnings("serial")
 public class UserInterface extends JPanel {
+    JFrame frame;
     JPanel graphPanel;
-    DefaultListModel<String> tickerListModel;
+    TickerMap tickerMap;
     JList<String> tickerList;
-    JScrollPane tickerListScroller;
     boolean tickerSelectedFlag;
-    DefaultListModel<String> timeListModel;
     JList<String> timeSeriesList;
-    JScrollPane timeListScroller;
     boolean timeSelectedFlag;
     JButton okButton;
-    TickerList tickerlist;
+   
+    
 
-
-    public UserInterface() {
+    public UserInterface(JFrame frame) {
+        this.frame = frame;
+        
         //Create JPanel container for chart to be placed in
         graphPanel = new JPanel();
         graphPanel.setPreferredSize(new Dimension(800, 500));
@@ -52,34 +54,30 @@ public class UserInterface extends JPanel {
         
         
         //Create ticker list and put it in a scroll pane 
-        tickerListModel = new DefaultListModel<String>();
-        tickerlist = new TickerList();
-        String tickers[] = tickerlist.getTickerArray();
-        //String tickers[] = {"VOO", "MSFT", "AAPL", "AMZN", "FB", "GOOGL", "DOW"};
+        tickerMap = new TickerMap();
+        String tickers[] = tickerMap.getTickerArray();
+        DefaultListModel<String> tickerListModel = new DefaultListModel<String>();
         for (int i = 0; i < tickers.length; i++) 
             tickerListModel.addElement(tickers[i]);
         tickerList = new JList<String>(tickerListModel);
         tickerList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tickerList.setVisibleRowCount(-1);
-        //ßtickerList.getToolTipLocation(event)
-        
-        tickerListScroller = new JScrollPane(tickerList);
+        JScrollPane tickerListScroller = new JScrollPane(tickerList);
         tickerListScroller.setPreferredSize(new Dimension(250, 80));
         tickerList.addListSelectionListener(new TickerListHandler());
-        tickerList.addMouseMotionListener(new TickerMouseListener());
+        tickerList.addMouseListener(new TickerMouseListener());
         tickerSelectedFlag = false;
         
         
         //Create time series list and put it in a scroll pane
-        timeListModel = new DefaultListModel<String>();
+        DefaultListModel<String> timeListModel = new DefaultListModel<String>();
         String timeSeries[] = {"Day", "Week", "Month", "Year"};
         for (int i = 0; i < timeSeries.length; i++)
             timeListModel.addElement(timeSeries[i]);
         timeSeriesList = new JList<String>(timeListModel);
         timeSeriesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         timeSeriesList.setVisibleRowCount(-1);
-        
-        timeListScroller = new JScrollPane(timeSeriesList);
+        JScrollPane timeListScroller = new JScrollPane(timeSeriesList);
         timeSeriesList.setPreferredSize(new Dimension(250, 80));
         timeSeriesList.addListSelectionListener(new TimeListHandler());
         timeSelectedFlag = false;
@@ -91,7 +89,7 @@ public class UserInterface extends JPanel {
         okButton.setEnabled(false);
 
         
-        //Customize layout 
+        //Customize layout of UserInterface JPanel 
         setLayout(new BorderLayout(10, 10));
         add(graphPanel, BorderLayout.PAGE_START);
         add(tickerListScroller, BorderLayout.LINE_START);
@@ -101,36 +99,39 @@ public class UserInterface extends JPanel {
     
     
     /**
-     * This class sets the "tickerSelectedFlag" to indicate that the user has selected a stock ticker, and then calls setButtonState() method. 
+     * This inner class sets the "tickerSelectedFlag" to indicate that the user has selected a stock ticker, and then calls setButtonState() method. 
      * @author gracepark
      *
      */
-    class TickerListHandler implements ListSelectionListener {
+    private class TickerListHandler implements ListSelectionListener {
+        @Override
         public void valueChanged(ListSelectionEvent e) {
             tickerSelectedFlag = true;
             setButtonState();
         } 
     }
     
-    class TickerMouseListener implements MouseMotionListener {
+    
+    /**
+     * This event handling class sets the tooltip text of the ticker selection list displayed inside the UI window.
+     * The tooltip text displays the company name of a specific ticker symbol when the user's mouse hovers over the ticker symbol. 
+     * This class extends the abstract MouseAdapter class, which implements MouseListener interface to override the mouseEntered method. 
+     * @author gracepark
+     *
+     */
+    private class TickerMouseListener extends MouseAdapter {
         @Override
-        public void mouseMoved(MouseEvent e) {
+        public void mouseEntered(MouseEvent e) {
             @SuppressWarnings("unchecked")
             JList<String> list = (JList<String>) e.getSource();
             DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
             int index = list.locationToIndex(e.getPoint());
             if (index >= 0) {
                 String temp = model.getElementAt(index);
-                String companyName = tickerlist.getCompanyName(temp);
+                String companyName = tickerMap.getNameOfTicker(temp);
                 list.setToolTipText(companyName);
             } 
         }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            // TODO Auto-generated method stub
-            
-        } 
     }
  
     
@@ -139,7 +140,8 @@ public class UserInterface extends JPanel {
      * @author gracepark
      *
      */
-    class TimeListHandler implements ListSelectionListener {
+    private class TimeListHandler implements ListSelectionListener {
+        @Override
         public void valueChanged(ListSelectionEvent e) {
             timeSelectedFlag = true;
             setButtonState();
@@ -156,12 +158,13 @@ public class UserInterface extends JPanel {
    
     
     /**
-     * This inner class handles the "OK" button. It utilizes the other two classes. 
+     * This event handling class sets the events that occur after a user presses the "OK" button. 
+     * It creates objects of the StockDataReader and GraphConstructor classes. 
      * @author gracepark
      *
      */
-    class OkButtonHandler implements ActionListener {
-
+    private class OkButtonHandler implements ActionListener {
+        @Override
         public void actionPerformed (ActionEvent e) {
             String ticker = (String) tickerList.getSelectedValue();
             String timeSeries = (String) timeSeriesList.getSelectedValue();
@@ -169,29 +172,33 @@ public class UserInterface extends JPanel {
             
             //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a TreeMap 
             StockDataReader stock = new StockDataReader(ticker, timeSeriesInt);
-            HashMap<Integer, StockData> stockData = null;
             try {
-                stockData = stock.fetchData();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            } 
-            
-            //Creates an instance of DataConverter and uses its methods to convert TreeMap data to stock time and stock value arrays
-            DataConverter dataConvert = new DataConverter(stockData);
-            String[] stockTimes = dataConvert.getStockTimes();
-            double[] stockValues = dataConvert.getStockValues();
+                HashMap<Integer, StockData> stockData = stock.fetchData();
                 
-            if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
-            GraphConstructor.main(stockTimes, stockValues, graphPanel);
-            graphPanel.validate();
+                //Creates an instance of DataConverter and uses its methods to convert TreeMap data to stock time and stock value arrays
+                DataConverter dataConvert = new DataConverter(stockData);
+                String[] stockTimes = dataConvert.getStockTimes();
+                double[] stockValues = dataConvert.getStockValues();
+                    
+                if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
+                GraphConstructor.main(stockTimes, stockValues, graphPanel);
+                //GraphConstructor.main(stockTimes, stockValues, graphPanel, timeSeriesInt);
+                graphPanel.validate();
+            } catch (IOException e1) {
+                //e1.printStackTrace();
+                JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please check Internet connection.", "Message", JOptionPane.WARNING_MESSAGE);
+            } catch (NullPointerException e1) {
+                System.out.println(e1.getMessage());
+                JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please try again.", "Message", JOptionPane.WARNING_MESSAGE);
+            } 
         }
         
         /**
-         * This method converts the timeSeries variable from String format to integer format. 
+         * This method converts the timeSeries variable from String to integer format. 
          * @param timeSeries
-         * @return
+         * @return integer of time series value
          */
-        int convertTimeSeriesToInt(String timeSeries) {
+        private int convertTimeSeriesToInt(String timeSeries) {
             switch(timeSeries) {
                 case "Day": 
                     return 1;
@@ -214,13 +221,14 @@ public class UserInterface extends JPanel {
      */
     private static void createAndShowGUI() {
         //Create and set up the window
+        //JFrame frame = new JFrame("Stock Visualizer");
         JFrame frame = new JFrame("Stock Visualizer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         //Create and set up the content pane
-        UserInterface newContentPane = new UserInterface();
-        newContentPane.setOpaque(true);
-        frame.setContentPane(newContentPane);
+        UserInterface newPanel = new UserInterface(frame);
+        newPanel.setOpaque(true);
+        frame.setContentPane(newPanel);
         
         //Display the window
         frame.pack();
