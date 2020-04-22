@@ -311,11 +311,9 @@ public class GraphConstructor extends JPanel {
 
     public int[] setXAxis(String[] times) {
 	int[] numberedXAxis = new int[StockTimes.length];
-	// int numberOfSegments = StockTimes.length;
 
 	for (int i = 0; i < numberedXAxis.length; i++) {
 	    numberedXAxis[i] = valueConverterX(i);
-	    // tempScaleLength = tempScaleLength + equalInterval;
 	}
 
 	return numberedXAxis;
@@ -480,6 +478,10 @@ public class GraphConstructor extends JPanel {
 
 	setLayout(null);
 	add(label);
+    }
+    
+    public int getGraphInterval() {
+	return graphInterval;
     }
 
     public int getWindowWidth() {

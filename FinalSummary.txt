@@ -1,0 +1,17 @@
+Project Summary
+Team 62
+Members - Grace Park, Jeri Shelly, and Henry Chapman
+
+We created a stock graphing application with Java. 
+
+Features
+
+
+
+Graph
+Graph Built to Accept Flexible Data - can graph anything positive inputting two arrays
+Setting Flexible X and Y Axes based on Price and Time Levels
+Baseline Trend Line
+Line Color Based on Positive or Negative
+Strategically Placed Labels to Avoid Overcrowding
+
