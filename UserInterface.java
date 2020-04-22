@@ -181,7 +181,7 @@ public class UserInterface extends JPanel {
                 double[] stockValues = dataConvert.getStockValues();
                     
                 if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
-                GraphConstructor.main(stockTimes, stockValues, graphPanel);
+                GraphConstructor.main(stockTimes, stockValues, timeSeriesInt, graphPanel);
                 //GraphConstructor.main(stockTimes, stockValues, graphPanel, timeSeriesInt);
                 graphPanel.validate();
             } catch (IOException e1) {
