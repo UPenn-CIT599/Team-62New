@@ -205,9 +205,9 @@ public class UserInterface extends JPanel {
                 case "Week":
                     return 5;
                 case "Month":
-                    return 30;
+                    return 20;
                 case "Year":
-                    return 365;     
+                    return 260;     
             }
             return 0;
         }
