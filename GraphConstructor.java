@@ -135,7 +135,7 @@ public class GraphConstructor extends JPanel {
 		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
 	    }
 
-	    if (timeType == 5) {
+	    if (timeType == 5 & i % 7 == 0) {
 		g.drawString(stockMonth, xAxisIntervals[i] - 25, heightMidline + 20);
 		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
 	    }
@@ -210,13 +210,18 @@ public class GraphConstructor extends JPanel {
 
 	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
 	    
-	    System.out.println(timeType);
+	    System.out.println(yAxisPrices.length);
+
 	    if (timeType == 260 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }  
-	    if (timeType != 260){
+	    if (timeType == 5 & i % 5 == 0){
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
+	    if (timeType == 20 || timeType == 1){
+		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
+	    }
+	    
 	}
     }
 
