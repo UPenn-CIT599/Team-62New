@@ -18,9 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GraphConstructor extends JPanel {
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     int buffer = 20;
     int windowWidth = 800;
@@ -29,13 +26,19 @@ public class GraphConstructor extends JPanel {
     int height = windowHeight - buffer;
     int graphInterval = 1;
     int timeType;
-    
+    boolean trendlineVisible = false;
+
     double[] StockValues = new double[] {};
+    double[] TrendLine = new double[] {};
+
     String[] StockTimes = new String[] {};
     String[] PriceLevels = new String[] {};
+
     int[] xAxisIntervals = new int[] {};
     int[] yAxisIntervals = new int[] {};
     int[] yAxisPrices = new int[] {};
+    int[] trendLinePrices = new int[] {};
+
     String[] yAxisPriceLevels = new String[] {};
 
     int heightMidline = (int) ((height / 7) * 6);
@@ -49,6 +52,7 @@ public class GraphConstructor extends JPanel {
 	this.xAxisIntervals = setXAxis(StockTimes);
 	this.yAxisIntervals = setYAxis(StockValues);
 	this.yAxisPrices = new int[xAxisIntervals.length];
+	this.trendLinePrices = new int[xAxisIntervals.length];
 	this.yAxisPriceLevels = setYAxisPriceLevels(StockValues);
 
 	// This Method draws both Y and X Axis.
@@ -211,7 +215,6 @@ public class GraphConstructor extends JPanel {
 	    } else if (xAxisIntervals.length < 260) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
-
 	}
     }
 
@@ -232,6 +235,17 @@ public class GraphConstructor extends JPanel {
 	}
 	for (int i = 0; i < xAxisIntervals.length - 1; i++) {
 	    g.drawLine(xAxisIntervals[i], yAxisPrices[i], xAxisIntervals[i + 1], yAxisPrices[i + 1]);
+	}
+
+	g.setColor(Color.BLACK);
+	for (int i = 0; i < xAxisIntervals.length; i++) {
+	    trendLinePrices[i] = valueConverterY(TrendLine[i]);
+	}
+
+	if (trendlineVisible == true) {
+	    for (int i = 0; i < xAxisIntervals.length - 1; i++) {
+		g.drawLine(xAxisIntervals[i], trendLinePrices[i], xAxisIntervals[i + 1], trendLinePrices[i + 1]);
+	    }
 	}
     }
 
@@ -481,7 +495,7 @@ public class GraphConstructor extends JPanel {
 	setLayout(null);
 	add(label);
     }
-    
+
     public int getGraphInterval() {
 	return graphInterval;
     }
@@ -509,16 +523,28 @@ public class GraphConstructor extends JPanel {
     public void setStockTimes(String[] stockTimes) {
 	this.StockTimes = stockTimes;
     }
-    
-    public void setTimeTime(int timeType) {
+
+    public void setTrendlineVisible(boolean trueFalse) {
+	this.trendlineVisible = trueFalse;
+    }
+
+    public void setTrendLine(double[] trendLine) {
+	this.TrendLine = trendLine;
+    }
+
+    public void setTimeType(int timeType) {
 	this.timeType = timeType;
     }
 
-    public static void main(String[] stockTimes, double[] stockValues, int timeType, JPanel panel) {
+    public static void main(String[] stockTimes, double[] stockValues, int timeType, boolean trendlineVisible,
+	    double[] trendLine, JPanel panel) {
 	GraphConstructor gc = new GraphConstructor();
 	gc.setStockValues(stockValues);
 	gc.setStockTimes(stockTimes);
-	gc.setTimeTime(timeType);
+	gc.setTimeType(timeType);
+	
+	gc.setTrendlineVisible(trendlineVisible);
+	gc.setTrendLine(trendLine);
 	panel.add(gc);
     }
 
