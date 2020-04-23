@@ -205,13 +205,14 @@ public class UserInterface extends JPanel implements ItemListener {
                 DataConverter dataConvert = new DataConverter(stockData);
                 String[] stockTimes = dataConvert.getStockTimes();
                 double[] stockValues = dataConvert.getStockValues();
-                
     
-                HashMap<Integer, StockData> trendlineData = stock.fetchTrendlineData();
-                DataConverter trendlineConvert = new DataConverter(trendlineData);
-                double[] trendlineValues = trendlineConvert.getStockValues();
-
-   
+                double[] trendlineValues = new double[stockValues.length];
+                if (trendLineFlag) {
+                    HashMap<Integer, StockData> trendlineData = stock.fetchTrendlineData();
+                    DataConverter trendlineConvert = new DataConverter(trendlineData);
+                    trendlineValues = trendlineConvert.getStockValues();
+                } 
+ 
                 if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
                 GraphConstructor.main(stockTimes, stockValues, timeSeriesInt, trendLineFlag, trendlineValues, graphPanel);
                 graphPanel.validate();
