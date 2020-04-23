@@ -550,7 +550,7 @@ public class GraphConstructor extends JPanel {
 	gc.setTimeType(timeType);
 
 	gc.setTrendlineVisible(trendlineVisible);
-	gc.setTrendLine(trendLine);
+	gc.setTrendLine(trendLine, trendlineVisible);
 	panel.add(gc);
     }
 
