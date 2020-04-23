@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -30,7 +33,7 @@ import javax.swing.event.ListSelectionListener;
  *
  */
 @SuppressWarnings("serial")
-public class UserInterface extends JPanel {
+public class UserInterface extends JPanel implements ItemListener {
     JFrame frame;
     JPanel graphPanel;
     TickerMap tickerMap;
@@ -38,6 +41,7 @@ public class UserInterface extends JPanel {
     boolean tickerSelectedFlag;
     JList<String> timeSeriesList;
     boolean timeSelectedFlag;
+    boolean trendLineFlag;
     JButton okButton;
    
     
@@ -82,6 +86,12 @@ public class UserInterface extends JPanel {
         timeSeriesList.addListSelectionListener(new TimeListHandler());
         timeSelectedFlag = false;
         
+        
+        //Create trend line checkbox 
+        trendLineFlag = false;
+        JCheckBox trendBox = new JCheckBox("Trend line");
+        trendBox.addItemListener(this);
+        
 
         //Create OK Button and set up handler
         okButton = new JButton("OK");
@@ -94,6 +104,7 @@ public class UserInterface extends JPanel {
         add(graphPanel, BorderLayout.PAGE_START);
         add(tickerListScroller, BorderLayout.LINE_START);
         add(timeListScroller, BorderLayout.LINE_END);
+        add(trendBox, BorderLayout.CENTER);
         add(okButton, BorderLayout.PAGE_END);
     }
     
@@ -148,12 +159,26 @@ public class UserInterface extends JPanel {
         } 
     }
     
+    
     /**
      * This method enables the "OK" button if the user has selected both a stock ticker and time series.
      */
     private void setButtonState() {
         if (tickerSelectedFlag && timeSelectedFlag) 
             okButton.setEnabled(true);
+    }
+    
+    
+    /**
+     * This method overrides the ItemListener class' method to handle checkbox to select trendline. 
+     */
+    @Override 
+    public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == 1) {
+            trendLineFlag = true;
+        } else {
+            trendLineFlag = false;
+        }
     }
    
     
@@ -171,7 +196,8 @@ public class UserInterface extends JPanel {
             int timeSeriesInt = convertTimeSeriesToInt(timeSeries);
             
             //Creates an instance of StockDataReader and uses its fetchData() method to get stock data stored in a TreeMap 
-            StockDataReader stock = new StockDataReader(ticker, timeSeriesInt);
+            StockDataReaderModified stock = new StockDataReaderModified(ticker, timeSeriesInt);
+            
             try {
                 HashMap<Integer, StockData> stockData = stock.fetchData();
                 
@@ -179,10 +205,15 @@ public class UserInterface extends JPanel {
                 DataConverter dataConvert = new DataConverter(stockData);
                 String[] stockTimes = dataConvert.getStockTimes();
                 double[] stockValues = dataConvert.getStockValues();
-                    
+                
+    
+                HashMap<Integer, StockData> trendlineData = stock.fetchTrendlineData();
+                DataConverter trendlineConvert = new DataConverter(trendlineData);
+                double[] trendlineValues = trendlineConvert.getStockValues();
+
+   
                 if (graphPanel.getComponentCount() > 0) graphPanel.remove(graphPanel.getComponent(0));
-                GraphConstructor.main(stockTimes, stockValues, timeSeriesInt, graphPanel);
-                //GraphConstructor.main(stockTimes, stockValues, graphPanel, timeSeriesInt);
+                GraphConstructor.main(stockTimes, stockValues, timeSeriesInt, trendLineFlag, trendlineValues, graphPanel);
                 graphPanel.validate();
             } catch (IOException e1) {
                 //e1.printStackTrace();
@@ -191,6 +222,7 @@ public class UserInterface extends JPanel {
                 System.out.println(e1.getMessage());
                 JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please try again.", "Message", JOptionPane.WARNING_MESSAGE);
             } 
+ 
         }
         
         /**
@@ -205,7 +237,7 @@ public class UserInterface extends JPanel {
                 case "Week":
                     return 5;
                 case "Month":
-                    return 20;
+                    return 20   ;
                 case "Year":
                     return 260;     
             }
