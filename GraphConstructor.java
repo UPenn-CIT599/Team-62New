@@ -528,8 +528,14 @@ public class GraphConstructor extends JPanel {
 	this.trendlineVisible = trueFalse;
     }
 
-    public void setTrendLine(double[] trendLine) {
-	this.TrendLine = trendLine;
+    public void setTrendLine(double[] trendLine, boolean trendlineVisible) {
+	if (trendlineVisible = false) {
+	    for (int i = 0; i < StockValues.length; i++) {
+		trendLine[i] = 1;
+	    }
+	} else {
+	    this.TrendLine = trendLine;
+	}
     }
 
     public void setTimeType(int timeType) {
@@ -542,7 +548,7 @@ public class GraphConstructor extends JPanel {
 	gc.setStockValues(stockValues);
 	gc.setStockTimes(stockTimes);
 	gc.setTimeType(timeType);
-	
+
 	gc.setTrendlineVisible(trendlineVisible);
 	gc.setTrendLine(trendLine);
 	panel.add(gc);
