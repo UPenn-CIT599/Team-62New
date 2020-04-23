@@ -6,9 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -16,11 +17,15 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -43,6 +48,9 @@ public class UserInterface extends JPanel implements ItemListener {
     boolean timeSelectedFlag;
     boolean trendLineFlag;
     JButton okButton;
+    Timer timer;
+    JLabel timerLabel;
+    boolean timerFlag;
    
     
 
@@ -56,7 +64,6 @@ public class UserInterface extends JPanel implements ItemListener {
         Border blackLine = BorderFactory.createLineBorder(Color.black);
         graphPanel.setBorder(blackLine);
         
-        
         //Create ticker list and put it in a scroll pane 
         tickerMap = new TickerMap();
         String tickers[] = tickerMap.getTickerArray();
@@ -69,9 +76,10 @@ public class UserInterface extends JPanel implements ItemListener {
         JScrollPane tickerListScroller = new JScrollPane(tickerList);
         tickerListScroller.setPreferredSize(new Dimension(250, 80));
         tickerList.addListSelectionListener(new TickerListHandler());
-        tickerList.addMouseListener(new TickerMouseListener());
+        //tickerList.addMouseListener(new TickerMouseListener());
+        tickerList.addMouseMotionListener(new TickerMouseListener());
         tickerSelectedFlag = false;
-        
+        ToolTipManager.sharedInstance().setInitialDelay(0);
         
         //Create time series list and put it in a scroll pane
         DefaultListModel<String> timeListModel = new DefaultListModel<String>();
@@ -84,28 +92,36 @@ public class UserInterface extends JPanel implements ItemListener {
         JScrollPane timeListScroller = new JScrollPane(timeSeriesList);
         timeSeriesList.setPreferredSize(new Dimension(250, 80));
         timeSeriesList.addListSelectionListener(new TimeListHandler());
-        timeSelectedFlag = false;
+        timeSelectedFlag = false; 
         
-        
-        //Create trend line checkbox 
-        trendLineFlag = false;
-        JCheckBox trendBox = new JCheckBox("Trend line");
+        //Create trendline checkbox 
+        JCheckBox trendBox = new JCheckBox("Trendline");
+        trendBox.setHorizontalAlignment(SwingConstants.CENTER);
         trendBox.addItemListener(this);
-        
+        trendLineFlag = false;
+
+        //Create timer label
+        timerLabel = new JLabel("Wait Time: 0 sec", JLabel.CENTER);
+        timerFlag = false;
 
         //Create OK Button and set up handler
         okButton = new JButton("OK");
         okButton.addActionListener(new OkButtonHandler());
         okButton.setEnabled(false);
-
-        
+        okButton.setPreferredSize(new Dimension(10, 40));
+         
         //Customize layout of UserInterface JPanel 
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayout(0,1));
+        bottomPanel.add(timerLabel);
+        bottomPanel.add(okButton);
+        
         setLayout(new BorderLayout(10, 10));
         add(graphPanel, BorderLayout.PAGE_START);
         add(tickerListScroller, BorderLayout.LINE_START);
         add(timeListScroller, BorderLayout.LINE_END);
         add(trendBox, BorderLayout.CENTER);
-        add(okButton, BorderLayout.PAGE_END);
+        add(bottomPanel, BorderLayout.PAGE_END);
     }
     
     
@@ -125,14 +141,14 @@ public class UserInterface extends JPanel implements ItemListener {
     
     /**
      * This event handling class sets the tooltip text of the ticker selection list displayed inside the UI window.
-     * The tooltip text displays the company name of a specific ticker symbol when the user's mouse hovers over the ticker symbol. 
-     * This class extends the abstract MouseAdapter class, which implements MouseListener interface to override the mouseEntered method. 
+     * The tooltip text displays the name of a specific ticker symbol when the user's mouse hovers over the ticker symbol. 
+     * This class extends the abstract MouseMotionAdapter class, which implements the MouseMotionListener interface, to override the mouseEntered method. 
      * @author gracepark
      *
      */
-    private class TickerMouseListener extends MouseAdapter {
+    private class TickerMouseListener extends MouseMotionAdapter {
         @Override
-        public void mouseEntered(MouseEvent e) {
+        public void mouseMoved(MouseEvent e) {
             @SuppressWarnings("unchecked")
             JList<String> list = (JList<String>) e.getSource();
             DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
@@ -164,7 +180,7 @@ public class UserInterface extends JPanel implements ItemListener {
      * This method enables the "OK" button if the user has selected both a stock ticker and time series.
      */
     private void setButtonState() {
-        if (tickerSelectedFlag && timeSelectedFlag) 
+        if (tickerSelectedFlag && timeSelectedFlag && !timerFlag) 
             okButton.setEnabled(true);
     }
     
@@ -220,11 +236,33 @@ public class UserInterface extends JPanel implements ItemListener {
                 //e1.printStackTrace();
                 JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please check Internet connection.", "Message", JOptionPane.WARNING_MESSAGE);
             } catch (NullPointerException e1) {
-                System.out.println(e1.getMessage());
-                JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please try again.", "Message", JOptionPane.WARNING_MESSAGE);
+                //System.out.println(e1.getMessage());
+                timer = new Timer(1000, new ActionListener() {
+                    int currentSecond = LocalTime.now().getSecond();
+                    int secondsLeft = 60 - currentSecond;
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        timerLabel.setText("Wait Time: " + secondsLeft + " sec");
+                        timerFlag = true;
+                        okButton.setEnabled(false);
+                        if (secondsLeft <= 0) {
+                            timerFlag = false;
+                            okButton.setEnabled(true);
+                            timer.stop();
+                        }
+                        secondsLeft -= 1;
+                        
+                    }
+                });
+                timer.start();
+                JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please try again later. "
+                        + "\nAlpha Vantage limits API calls to 5 per minute.", "Message", JOptionPane.WARNING_MESSAGE);
             } 
  
         }
+        
+        
         
         /**
          * This method converts the timeSeries variable from String to integer format. 
@@ -254,7 +292,6 @@ public class UserInterface extends JPanel implements ItemListener {
      */
     private static void createAndShowGUI() {
         //Create and set up the window
-        //JFrame frame = new JFrame("Stock Visualizer");
         JFrame frame = new JFrame("Stock Visualizer");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
