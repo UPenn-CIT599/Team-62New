@@ -209,10 +209,12 @@ public class GraphConstructor extends JPanel {
 	    yAxisPrices[i] = valueConverterY(StockValues[i]);
 
 	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
-
-	    if (timeType >= 260 & i % 20 == 0) {
+	    
+	    System.out.println(timeType);
+	    if (timeType == 260 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
-	    } else if (xAxisIntervals.length < 260) {
+	    }  
+	    if (timeType != 260){
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
 	}
