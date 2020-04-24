@@ -10,26 +10,23 @@ import org.junit.Test;
  * @author jeris
  *
  */
-
 public class StockDataReaderTester {
-
-	static int testDays = 11;
-	static HashMap<Integer, StockData> testMap = new HashMap<Integer, StockData>();
 	
+	static int testDays;
+	static HashMap<Integer, StockData> testMap = new HashMap<Integer, StockData>();
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
-		StockDataReader stock = new StockDataReader("IBM", testDays);
+		testDays = 20;
+		StockDataReaderModified stock = new StockDataReaderModified("IBM", testDays);
 		testMap = stock.fetchData();
 
 	}
 	
 	@Test
-	public void numberOfDays() {
-		assertEquals(testDays, testMap.size(), "Check that you're returning the correct number of days");
+	public void numberOfDaysTest() {
+		assertTrue(testMap.size() >= testDays);
 	}
-
-
-
 	
+
 }
