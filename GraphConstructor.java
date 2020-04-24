@@ -210,7 +210,6 @@ public class GraphConstructor extends JPanel {
 
 	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
 	    
-	    System.out.println(yAxisPrices.length);
 
 	    if (timeType == 260 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
