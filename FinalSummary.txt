@@ -5,7 +5,6 @@ Members - Grace Park, Jeri Shelly, and Henry Chapman
 We created a stock graphing application with Java. 
 
 Features
-
 User Interface Window
 User can interact with 4 different input objects: 
 1. Ticker symbol scrolling list
@@ -14,11 +13,9 @@ User can interact with 4 different input objects:
 4. “Ok” button to retrieve stock price data
 A user must select a ticker symbol and time series to be able to press the “Ok” button. Alpha Vantage (provider of API for realtime stock data) allows limited (5) free API calls per minute. If the user exceeds the limit, the “Ok” button becomes disabled and a timer above the “Ok” button will indicate the amount of time left until the next time the user can click the “Ok” button again.
 
-
 Graph
-Graph Built to Accept Flexible Data - can graph anything positive inputting two arrays
-Setting Flexible X and Y Axes based on Price and Time Levels
-Baseline Trend Line
-Line Color Based on Positive or Negative
-Strategically Placed Labels to Avoid Overcrowding
+GraphConstructor takes in two arrays. One of the arrays contains doubles of every stock price. The other array contains strings of each corresponding time. Graph constructor paints every price and time on a JPanel. It connects each of these points to show the price changes over time. 
 
+GraphConstructor also takes in a trendline as an array of doubles. This trendline, pulled directly from the alphavantage API, shows the moving average for each day during the time frame. GraphConstructor also draws a horizontal line across the graph from the first point to the end. This lets the user know how far the price went up or down across the time series. Finally, GraphConstructor sets the color of the data displayed based on whether the stock has gained value or lost value across the time series. If it has gained value, the line is colored green. Otherwise, the line is colored red. 
+
+I wrote GraphConstructor to be as flexible as possible. This means it can graph any type of double that is passed to it via an array. It sets a flexible Y-Axis that shows a subrange from the data's smallest value to the data's largest value. It also plots labels sparingly, so readers do not get overwhelmed. I used drawString() and JLabels to create these labels. 
