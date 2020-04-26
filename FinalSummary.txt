@@ -12,7 +12,11 @@ User can interact with 4 different input objects:
 2. Time series scrolling list
 3. Checkbox to add an optional trend line 
 4. “Ok” button to retrieve stock price data
-A user must select a ticker symbol and time series to be able to press the “Ok” button. Alpha Vantage (provider of API for realtime stock data) allows limited (5) free API calls per minute. If the user exceeds the limit, the “Ok” button becomes disabled and a timer above the “Ok” button will indicate the amount of time left until the next time the user can click the “Ok” button again.
+A user must select a ticker symbol and time series to be able to press the “Ok” button. 
+Alpha Vantage (provider of API for realtime stock data) allows limited (5) free API 
+calls per minute. If the user exceeds the limit, the “Ok” button becomes disabled and 
+a timer above the “Ok” button will indicate the amount of time left until the next time 
+the user can click the “Ok” button again.
 
 Graph
 GraphConstructor takes in two arrays. One of the arrays contains doubles of every stock price. 
