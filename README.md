@@ -17,10 +17,12 @@ Due to free API restrictions, the user can only make 5 calls per minute to retri
 How to get it running:
 1. Download the .Zip file from this GitHub Repository.
 2. Open the project in Eclipse. 
- - File -> Open Projects From File System -> Navigate to Directory -> Click Open
- ![Alt text](Screenshots/Screen Shot 2020-04-26 at 12.23.18 PM.png?raw=true "Optional Title")
- 
- - Go to a JUnit Test, hover over a test, then click Import JUnit 5 or JUnit 4. 
- 
- 
+ - File -> Open Projects From File System -> Navigate to Directory -> Click Open 
+ - Go to a JUnit Test, hover over a test, then click Import JUnit 5 or JUnit 4.  
 3. Run the project from UserInterface.java.
+
+To Use the App:
+1. Select the Index want to view.
+2. Select if you want to view a trendline or not. 
+3. Select if which time period you want. 
+4. Click the OK Button.
