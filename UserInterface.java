@@ -52,8 +52,6 @@ public class UserInterface extends JPanel implements ItemListener {
     JLabel timerLabel;
     boolean timerFlag;
    
-    
-
     public UserInterface(JFrame frame) {
         this.frame = frame;
         
@@ -124,7 +122,6 @@ public class UserInterface extends JPanel implements ItemListener {
         add(bottomPanel, BorderLayout.PAGE_END);
     }
     
-    
     /**
      * This inner class sets the "tickerSelectedFlag" to indicate that the user has selected a stock ticker, and then calls setButtonState() method. 
      * @author gracepark
@@ -137,7 +134,6 @@ public class UserInterface extends JPanel implements ItemListener {
             setButtonState();
         } 
     }
-    
     
     /**
      * This event handling class sets the tooltip text of the ticker selection list displayed inside the UI window.
@@ -184,7 +180,6 @@ public class UserInterface extends JPanel implements ItemListener {
             okButton.setEnabled(true);
     }
     
-    
     /**
      * This method overrides the ItemListener class' method to handle checkbox to select trendline. 
      */
@@ -196,8 +191,7 @@ public class UserInterface extends JPanel implements ItemListener {
             trendLineFlag = false;
         }
     }
-   
-    
+
     /**
      * This event handling class sets the events that occur after a user presses the "OK" button. 
      * It creates objects of the StockDataReader and GraphConstructor classes. 
@@ -259,10 +253,7 @@ public class UserInterface extends JPanel implements ItemListener {
                 JOptionPane.showMessageDialog(frame, "Unable to get stock data. Please try again later. "
                         + "\nAlpha Vantage limits API calls to 5 per minute.", "Message", JOptionPane.WARNING_MESSAGE);
             } 
- 
         }
-        
-        
         
         /**
          * This method converts the timeSeries variable from String to integer format. 
@@ -284,8 +275,6 @@ public class UserInterface extends JPanel implements ItemListener {
         }
     }
     
-    
-    
     /**
      * This method creates and displays the application window. 
      * It also places an instance of the UserInterface JPanel inside the window.  
@@ -304,9 +293,7 @@ public class UserInterface extends JPanel implements ItemListener {
         frame.pack();
         frame.setVisible(true);
     }
-    
-    
-    
+
     /**
      * This is the main method for the UserInterface class and the entire program. 
      * @param args
@@ -318,7 +305,5 @@ public class UserInterface extends JPanel implements ItemListener {
             }
         });
     }
-  
-
 }
 

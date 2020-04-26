@@ -148,25 +148,25 @@ public class GraphConstructor extends JPanel {
 	    }
 
 	    // Printing Y Axis in Segments of 1,000 if there are more than 10,000 Segments
-	    else if ((yAxisIntervals.length > 10000 & yAxisIntervals.length < 100000) & i % 2000 == 0) {
+	    else if ((yAxisIntervals.length > 10000 & yAxisIntervals.length <= 100000) & i % 2000 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 
 	    // Printing Y Axis in Segments of 100 if there are more than 1000 Segments
-	    else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length < 10000) & i % 200 == 0) {
+	    else if ((yAxisIntervals.length > 1000 & yAxisIntervals.length <= 10000) & i % 200 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 
 	    // Printing Y Axis in Segments of 20 if there are more than 1000 Segments
-	    else if ((yAxisIntervals.length > 100 & yAxisIntervals.length < 1000) & i % 30 == 0) {
+	    else if ((yAxisIntervals.length > 100 & yAxisIntervals.length <= 1000) & i % 30 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 
-	    else if ((yAxisIntervals.length > 10 & yAxisIntervals.length < 100) & i % 10 == 0) {
+	    else if ((yAxisIntervals.length > 10 & yAxisIntervals.length <= 100) & i % 2 == 0) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 
-	    else if ((yAxisIntervals.length < 10)) {
+	    else if (yAxisIntervals.length <= 10) {
 		drawLineLabel(yAxisPriceLevels[i], yAxisIntervals[i] + 5, g);
 	    }
 	}
@@ -483,8 +483,9 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * upNext10 This method takes in a double and returns the next landmark above
-     * that value. It uses the existing GraphInterval to calculate this landmark. 
+     * upNextLandmark This method takes in a double and returns the next landmark
+     * above that value. It uses the existing GraphInterval to calculate this
+     * landmark.
      * 
      * @param double range
      * @return double rangeLabel
@@ -504,8 +505,9 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * downNext10 This method takes in a double and returns the next landmark above
-     * that value. It uses the existing GraphInterval to calculate this landmark. 
+     * downNextLandmark This method takes in a double and returns the next landmark
+     * above that value. It uses the existing GraphInterval to calculate this
+     * landmark.
      * 
      * @param double range
      * @return double rangeLabel
@@ -524,12 +526,11 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * upNext10 This method takes in a double and returns the ten's place above it.
-     * For example, if you give it 14, the function will return 20. This is used to
-     * help construct the Y-Axis Scale.
+     * setGraphInterval This method sets the scale of the YAxis based on the overall
+     * range of the data. It controls the spread of the YAxis tickmarks on the
+     * graph.
      * 
-     * @param double range
-     * @return double rangeLabel
+     * @return temp tempGraphInterval
      */
 
     private int setGraphInterval() {
@@ -575,6 +576,13 @@ public class GraphConstructor extends JPanel {
     public void setTimeType(int timeType) {
 	this.timeType = timeType;
     }
+
+    /**
+     * main: This second main method plots the new graph on the JPanel every time
+     * the OK button is placed.
+     * 
+     * @return
+     */
 
     public static void main(String[] stockTimes, double[] stockValues, int timeType, boolean trendlineVisible,
 	    double[] trendLine, JPanel panel) {
