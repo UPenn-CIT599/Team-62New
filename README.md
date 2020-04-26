@@ -15,7 +15,12 @@ Limitations:
 Due to free API restrictions, the user can only make 5 calls per minute to retrieve data. Each stock display counts as one call. Every trendline selection counts as one call. Therefore, if the user selected "VOO" with a trendline, that would count as two calls. An error message will appear if the user makes too many API calls. 
 
 How to get it running:
-1. Download the .Zip file from this GitHub Repository. 
+1. Download the .Zip file from this GitHub Repository.
 2. Open the project in Eclipse. 
  - File -> Open Projects From File System -> Navigate to Directory -> Click Open
+ ![Alt text](Screenshots/Screen Shot 2020-04-26 at 12.23.18 PM.png?raw=true "Optional Title")
+ 
  - Go to a JUnit Test, hover over a test, then click Import JUnit 5 or JUnit 4. 
+ 
+ 
+3. Run the project from UserInterface.java.
