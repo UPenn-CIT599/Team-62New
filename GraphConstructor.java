@@ -1,48 +1,38 @@
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GraphConstructor extends JPanel {
     private static final long serialVersionUID = 1L;
-    int buffer = 20;
-    int windowWidth = 800;
-    int width = windowWidth - buffer;
-    int windowHeight = 500;
-    int height = windowHeight - buffer;
-    int graphInterval = 1;
-    int timeType;
-    boolean trendlineVisible = false;
+    private int buffer = 20;
+    private int windowWidth = 800;
+    private int width = windowWidth - buffer;
+    private int windowHeight = 500;
+    private int height = windowHeight - buffer;
+    private int graphInterval = 1;
+    private int timeType;
+    private boolean trendlineVisible = false;
 
-    double[] StockValues = new double[] {};
-    double[] TrendLine = new double[] {};
+    private double[] StockValues = new double[] {};
+    private double[] TrendLine = new double[] {};
 
-    String[] StockTimes = new String[] {};
-    String[] PriceLevels = new String[] {};
+    private String[] StockTimes = new String[] {};
 
-    int[] xAxisIntervals = new int[] {};
-    int[] yAxisIntervals = new int[] {};
-    int[] yAxisPrices = new int[] {};
-    int[] trendLinePrices = new int[] {};
+    private int[] xAxisIntervals = new int[] {};
+    private int[] yAxisIntervals = new int[] {};
+    private int[] yAxisPrices = new int[] {};
+    private int[] trendLinePrices = new int[] {};
 
-    String[] yAxisPriceLevels = new String[] {};
+    private String[] yAxisPriceLevels = new String[] {};
 
-    int heightMidline = (int) ((height / 7) * 6);
-    int xAxisStart = (int) (width / 11);
+    private int heightMidline = (int) ((height / 7) * 6);
+    private int xAxisStart = (int) (width / 11);
 
     public void paintComponent(Graphics g) {
 	super.paintComponent(g);
@@ -70,7 +60,7 @@ public class GraphConstructor extends JPanel {
      * @param g
      */
 
-    public void drawBasicGraph(Graphics g) {
+    private void drawBasicGraph(Graphics g) {
 	// Draw Background Rectangle
 	g.setColor(Color.LIGHT_GRAY);
 	g.fillRect(xAxisIntervals[0], yAxisIntervals[yAxisIntervals.length - 1],
@@ -100,7 +90,7 @@ public class GraphConstructor extends JPanel {
      * @param g
      */
 
-    public void drawScale(Graphics g) {
+    private void drawScale(Graphics g) {
 	// Draw X Labels and TickMarks
 	String timeFrame = StockTimes[0].split(" ")[0] + " to " + StockTimes[StockTimes.length - 1].split(" ")[0];
 
@@ -147,7 +137,6 @@ public class GraphConstructor extends JPanel {
 		g.drawString(stockTimeNoDate, xAxisIntervals[i] - 20, heightMidline + 20);
 		g.drawLine(xAxisIntervals[i], heightMidline, xAxisIntervals[i], heightMidline - 10);
 	    }
-
 	}
 
 	// Draw Y Labels and TickMarks
@@ -183,7 +172,15 @@ public class GraphConstructor extends JPanel {
 	}
     }
 
-    public void drawLineLabel(String PriceLevel, int yValue, Graphics g) {
+    /**
+     * drawLineLabel: This method draws a String and line label for each of the
+     * YAxis Tick Marks on the Y-Axis
+     * 
+     * @param String PriceLevel, int yValue, Graphics g
+     * @return nothing
+     */
+
+    private void drawLineLabel(String PriceLevel, int yValue, Graphics g) {
 	g.drawString(PriceLevel, xAxisIntervals[0] - 50, yValue);
 	g.drawLine(xAxisIntervals[0], yValue - 5, xAxisIntervals[0] + 10, yValue - 5);
     }
@@ -195,7 +192,7 @@ public class GraphConstructor extends JPanel {
      * @param g
      */
 
-    public void drawPoints(Graphics g) {
+    private void drawPoints(Graphics g) {
 
 	// Set Color of Points
 	if (negMarket() == true) {
@@ -209,18 +206,16 @@ public class GraphConstructor extends JPanel {
 	    yAxisPrices[i] = valueConverterY(StockValues[i]);
 
 	    g.fillOval(xAxisIntervals[i] - 3, yAxisPrices[i] - 2, 7, 7);
-	    
 
 	    if (timeType == 260 & i % 20 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
-	    }  
-	    if (timeType == 5 & i % 5 == 0){
+	    }
+	    if (timeType == 5 & i % 5 == 0) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
-	    if (timeType == 20 || timeType == 1){
+	    if (timeType == 20 || timeType == 1) {
 		LabelMaker(Double.toString(StockValues[i]), xAxisIntervals[i], yAxisPrices[i] + buffer);
 	    }
-	    
 	}
     }
 
@@ -232,7 +227,7 @@ public class GraphConstructor extends JPanel {
      * @param g
      */
 
-    public void drawLines(Graphics g) {
+    private void drawLines(Graphics g) {
 	// Draw Lines Setting Color Based on if it's positive or negative.
 	if (negMarket() == true) {
 	    g.setColor(Color.RED.darker().darker());
@@ -256,13 +251,38 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
+     * LabelMaker: This method adds a Jlabel of the point price at the XY values of
+     * that point. it moves labels that happen below the X-Axis.
+     * 
+     * @param String priceLevel, int xValue, int yValue
+     */
+
+    private void LabelMaker(String priceLevel, int xValue, int yValue) {
+	JLabel label = new JLabel(priceLevel);
+	label.setOpaque(true);
+	Dimension size = label.getPreferredSize();
+	label.setBackground(Color.lightGray);
+
+	if (yValue > heightMidline - 20) {
+	    label.setBounds(xValue, yValue - 50, size.width, size.height);
+	} else if (xValue >= xAxisIntervals[xAxisIntervals.length - 1]) {
+	    label.setBounds(xValue - 40, yValue, size.width, size.height);
+	} else {
+	    label.setBounds(xValue, yValue, size.width, size.height);
+	}
+
+	setLayout(null);
+	add(label);
+    }
+
+    /**
      * drawPositiveNegativeLine: This method draws a flat horizontal, dashed line
      * that represents the price-level at the beginning of the plotted series.
      * 
      * @param g
      */
 
-    public void drawPositiveNegativeLine(Graphics g) {
+    private void drawPositiveNegativeLine(Graphics g) {
 	Graphics2D g2d = (Graphics2D) g;
 
 	float[] dashingPattern1 = { 2f, 2f };
@@ -281,7 +301,7 @@ public class GraphConstructor extends JPanel {
      * @return boolean true/false
      */
 
-    public boolean negMarket() {
+    private boolean negMarket() {
 	double finalValue = StockValues[StockValues.length - 1];
 	double firstValue = StockValues[0];
 
@@ -290,6 +310,13 @@ public class GraphConstructor extends JPanel {
 	} else
 	    return false;
     }
+
+    /**
+     * getMin: This method returns the smallest value out of an Array.
+     * 
+     * @param double[] stockPrice
+     * @return double min
+     */
 
     public double getMin(double[] stockPrice) {
 	double min = stockPrice[0];
@@ -308,7 +335,7 @@ public class GraphConstructor extends JPanel {
      * that array.
      * 
      * @param stockPrice
-     * @return max
+     * @return double max
      */
 
     public double getMax(double[] stockPrice) {
@@ -331,7 +358,7 @@ public class GraphConstructor extends JPanel {
      * @return numberedXAxis
      */
 
-    public int[] setXAxis(String[] times) {
+    private int[] setXAxis(String[] times) {
 	int[] numberedXAxis = new int[StockTimes.length];
 
 	for (int i = 0; i < numberedXAxis.length; i++) {
@@ -349,13 +376,13 @@ public class GraphConstructor extends JPanel {
      * @return return numberedYAxis
      */
 
-    public int[] setYAxis(double[] stockValues) {
+    private int[] setYAxis(double[] stockValues) {
 	double range = getScale(StockValues);
 	int numberOfSegments = (int) (range / graphInterval);
 
 	int[] numberedYAxis = new int[numberOfSegments + 1];
 
-	double tempLength = downNext10(getMin(StockValues));
+	double tempLength = downNextLandmark(getMin(StockValues));
 
 	for (int i = 0; i < numberedYAxis.length; i++) {
 	    numberedYAxis[i] = valueConverterY(tempLength);
@@ -373,16 +400,16 @@ public class GraphConstructor extends JPanel {
      * @return YAxisPricelevels
      */
 
-    public String[] setYAxisPriceLevels(double[] stockPrice) {
+    private String[] setYAxisPriceLevels(double[] stockPrice) {
 	double range = getMax(stockPrice);
 
-	int extendedRange = upNext10(range);
+	int extendedRange = upNextLandmark(range);
 
 	int priceInterval = extendedRange / graphInterval;
 
 	String[] YAxisPriceLevels = new String[priceInterval + 1];
 
-	int tempPrice = downNext10(getMin(StockValues));
+	int tempPrice = downNextLandmark(getMin(StockValues));
 
 	for (int i = 0; i < YAxisPriceLevels.length; i++) {
 	    int tempPriceInt = tempPrice;
@@ -394,7 +421,7 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * valueConverter: This method converts the price levels of a stock to a pixel
+     * valueConverterY: This method converts the price levels of a stock to a pixel
      * value for graphing. It uses preportions to calculate this. For example, if a
      * stock's price was at $400, this function would convert that to a pixel value
      * for graphing. It is used in plotting the Y values of points and in
@@ -404,30 +431,47 @@ public class GraphConstructor extends JPanel {
      * @return int resultInt.
      */
 
-    public int valueConverterY(double originalPrice) {
+    private int valueConverterY(double originalPrice) {
 	double range = getScale(StockValues);
 
 	double yAxisLength = heightMidline - buffer;
-	double result = ((originalPrice - downNext10(getMin(StockValues))) * yAxisLength) / range;
+	double result = ((originalPrice - downNextLandmark(getMin(StockValues))) * yAxisLength) / range;
 
 	int resultInt = (int) (heightMidline - result);
 
 	return resultInt;
     }
 
-    public double getScale(double[] stockPrices) {
+    /**
+     * getScale This method takes calculates the range of values to be shown on the
+     * Y-Axis. It returns a range with a upward and downward buffer.
+     * 
+     * @param double range
+     * @return double rangeLabel
+     */
+
+    private double getScale(double[] stockPrices) {
 	double max = getMax(StockValues);
-	double extendedMax = upNext10(max);
+	double extendedMax = upNextLandmark(max);
 
 	double min = getMin(StockValues);
-	double extendedMin = downNext10(min);
+	double extendedMin = downNextLandmark(min);
 
 	double range = extendedMax - extendedMin;
 
 	return range;
     }
 
-    public int valueConverterX(int arrayIndex) {
+    /**
+     * valueConverterX: This method converts the times of a stock to a pixel value
+     * for graphing. It uses preportions to calculate this. It is used in plotting
+     * the X values of points and in constructing the X-Axis scale.
+     * 
+     * @param int arrayIndex
+     * @return int resultInt.
+     */
+
+    private int valueConverterX(int arrayIndex) {
 	int range = StockTimes.length;
 	double xAxisLength = width - (buffer * 4);
 
@@ -439,15 +483,14 @@ public class GraphConstructor extends JPanel {
     }
 
     /**
-     * upNext10 This method takes in a double and returns the ten's place above it.
-     * For example, if you give it 14, the function will return 20. This is used to
-     * help construct the Y-Axis Scale.
+     * upNext10 This method takes in a double and returns the next landmark above
+     * that value. It uses the existing GraphInterval to calculate this landmark. 
      * 
      * @param double range
      * @return double rangeLabel
      */
 
-    public int upNext10(double range) {
+    private int upNextLandmark(double range) {
 	int rangeLabel = 0;
 
 	int upwardInt = (int) Math.ceil(range);
@@ -460,7 +503,15 @@ public class GraphConstructor extends JPanel {
 	return rangeLabel;
     }
 
-    public int downNext10(double range) {
+    /**
+     * downNext10 This method takes in a double and returns the next landmark above
+     * that value. It uses the existing GraphInterval to calculate this landmark. 
+     * 
+     * @param double range
+     * @return double rangeLabel
+     */
+
+    private int downNextLandmark(double range) {
 	int rangeLabel = 0;
 
 	int downwardInt = (int) Math.floor(range);
@@ -471,6 +522,15 @@ public class GraphConstructor extends JPanel {
 	rangeLabel = downwardInt;
 	return rangeLabel;
     }
+
+    /**
+     * upNext10 This method takes in a double and returns the ten's place above it.
+     * For example, if you give it 14, the function will return 20. This is used to
+     * help construct the Y-Axis Scale.
+     * 
+     * @param double range
+     * @return double rangeLabel
+     */
 
     private int setGraphInterval() {
 	double scale = getScale(StockValues);
@@ -484,34 +544,8 @@ public class GraphConstructor extends JPanel {
 	return tempGraphInterval;
     }
 
-    public void LabelMaker(String priceLevel, int xValue, int yValue) {
-	JLabel label = new JLabel(priceLevel);
-	label.setOpaque(true);
-	Dimension size = label.getPreferredSize();
-	label.setBackground(Color.lightGray);
-
-	if (yValue > heightMidline - 20) {
-	    label.setBounds(xValue, yValue - 50, size.width, size.height);
-	} else if (xValue >= xAxisIntervals[xAxisIntervals.length - 1]) {
-	    label.setBounds(xValue - 40, yValue, size.width, size.height);
-	} else {
-	    label.setBounds(xValue, yValue, size.width, size.height);
-	}
-
-	setLayout(null);
-	add(label);
-    }
-
     public int getGraphInterval() {
 	return graphInterval;
-    }
-
-    public int getWindowWidth() {
-	return windowWidth;
-    }
-
-    public int getWindowHeight() {
-	return windowHeight;
     }
 
     public String[] getStockTimes() {
@@ -530,18 +564,12 @@ public class GraphConstructor extends JPanel {
 	this.StockTimes = stockTimes;
     }
 
-    public void setTrendlineVisible(boolean trueFalse) {
-	this.trendlineVisible = trueFalse;
+    public void setTrendlineVisible(boolean trendlineVisible) {
+	this.trendlineVisible = trendlineVisible;
     }
 
     public void setTrendLine(double[] trendLine, boolean trendlineVisible) {
-	if (trendlineVisible = false) {
-	    for (int i = 0; i < StockValues.length; i++) {
-		trendLine[i] = 1;
-	    }
-	} else {
-	    this.TrendLine = trendLine;
-	}
+	this.TrendLine = trendLine;
     }
 
     public void setTimeType(int timeType) {
@@ -554,7 +582,6 @@ public class GraphConstructor extends JPanel {
 	gc.setStockValues(stockValues);
 	gc.setStockTimes(stockTimes);
 	gc.setTimeType(timeType);
-
 	gc.setTrendlineVisible(trendlineVisible);
 	gc.setTrendLine(trendLine, trendlineVisible);
 	panel.add(gc);
