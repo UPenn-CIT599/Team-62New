@@ -1,6 +1,10 @@
 Project Summary
 Team 62
-Members - Grace Park, Jeri Shelly, and Henry Chapman
+Members - 
+- Grace Park: User Interface
+- Jeri Shelly: API Calls
+- Henry Chapman: Grapher
+
 URL: https://github.com/UPenn-CIT599/Team-62New
 
 We created a stock graphing application with Java. 
