@@ -24,7 +24,7 @@ public class StockDataReaderTester {
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
 		testDays = 20;
-		StockDataReaderModified stock = new StockDataReaderModified("IBM", testDays);
+		StockDataReader stock = new StockDataReader("IBM", testDays);
 		testMap = stock.fetchData();
 		StockData stockData = testMap.get(0);
 		stockDate = LocalDate.parse(stockData.getTime());

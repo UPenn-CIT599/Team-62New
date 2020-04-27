@@ -14,7 +14,7 @@ class DataConverterTester {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
-		StockDataReaderModified stock = new StockDataReaderModified("IBM", 20);
+		StockDataReader stock = new StockDataReader("IBM", 20);
 		testMap = stock.fetchData();
 		map = testMap.size();
 		converter = new DataConverter(testMap);
