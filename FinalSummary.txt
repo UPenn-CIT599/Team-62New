@@ -45,3 +45,17 @@ any type of double that is passed to it via an array. It sets a flexible Y-Axis
 that shows a subrange from the data's smallest value to the data's largest value. 
 It also plots labels sparingly, so readers do not get overwhelmed. 
 I used drawString() and JLabels to create these labels. 
+
+API Calls
+I first started researching websites that provided stock quotes and found 
+that Alpha Vantage was easy to use and provided straightforward documentation. 
+Additionally Alpha Vantage returned the data as a JSON. I then found a 
+free online Java library to assist with parsing through the JSON. After 
+getting familiar with how to extract  data from the JSON, I created  
+StockData class to neatly store the prices and times for any number of given days. 
+
+The GraphConstructor takes data in the form of arrays, so after getting the data from 
+Alpha Vantage, therefore we needed to take the data from the StockDataReader and pass
+it through the DataConverter. The DataConvertered loops through the HashMap 
+from the StockDataReader and uses the getters to retrieve the stock price or time
+and add them to the Array which is passed to the GraphConstructor.
